@@ -1,0 +1,145 @@
+# ==========================================
+# SAN MARCOS - BACKEND
+# Java 21 | Spring Boot | Maven | VS Code
+# Windows 11
+# ==========================================
+
+# Maven
+target/
+**/target/
+dependency-reduced-pom.xml
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+.mvn/timing.properties
+
+# Maven Wrapper
+# Mantener mvnw, mvnw.cmd y archivos del wrapper
+# Ignorar solamente el JAR si no deseas versionarlo
+# .mvn/wrapper/maven-wrapper.jar
+
+# Java
+*.class
+*.log
+*.hprof
+hs_err_pid*
+replay_pid*
+
+# Archivos empaquetados
+*.jar
+*.war
+*.ear
+!**/mvnw.jar
+
+# VS Code
+.vscode/*
+!.vscode/extensions.json
+
+# Eclipse / Spring Tool Suite
+.apt_generated/
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache/
+.metadata/
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# Gradle (por compatibilidad)
+.gradle/
+build/
+**/build/
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+*.stackdump
+
+# Archivos temporales
+*.tmp
+*.temp
+*.bak
+*.old
+*.swp
+*.swo
+*~
+.cache/
+tmp/
+temp/
+
+# Logs
+logs/
+**/logs/
+*.log.*
+*.log.gz
+
+# Variables de entorno y secretos
+.env
+.env.*
+!.env.example
+!.env.template
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+
+# Configuraciones locales de Spring Boot
+application-local.yml
+application-local.yaml
+application-local.properties
+application-secret.yml
+application-secret.yaml
+application-secret.properties
+**/application-local.yml
+**/application-local.yaml
+**/application-local.properties
+**/application-secret.yml
+**/application-secret.yaml
+**/application-secret.properties
+
+# Docker
+docker-compose.override.yml
+compose.override.yml
+
+# Bases de datos locales
+*.db
+*.sqlite
+*.sqlite3
+*.mv.db
+*.trace.db
+mysql-data/
+mysql_data/
+db-data/
+backups/
+
+# Reportes de pruebas
+**/surefire-reports/
+**/failsafe-reports/
+coverage/
+*.exec
+
+# Archivos de sistema macOS/Linux
+.DS_Store
+.Trashes
