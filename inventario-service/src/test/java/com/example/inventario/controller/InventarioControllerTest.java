@@ -15,7 +15,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.example.inventario.assemblers.InventarioModelAssembler;
@@ -50,7 +49,6 @@ class InventarioControllerTest {
     }
 
     @Test
-    @WithMockUser
     void obtenerTodos_shouldReturn200WithList() throws Exception {
         // Given
         InventarioResponse response = buildResponse();
@@ -60,14 +58,13 @@ class InventarioControllerTest {
 
         // When / Then
         mockMvc.perform(get("/inventario")
-                        .accept(MediaTypes.HAL_JSON_VALUE))
+                .accept(MediaTypes.HAL_JSON_VALUE))
                 .andExpect(status().isOk());
 
         verify(inventarioService).obtenerTodos();
     }
 
     @Test
-    @WithMockUser
     void obtenerPorId_shouldReturn200WithEntityModel() throws Exception {
         // Given
         InventarioResponse response = buildResponse();
@@ -76,7 +73,7 @@ class InventarioControllerTest {
 
         // When / Then
         mockMvc.perform(get("/inventario/1")
-                        .accept(MediaTypes.HAL_JSON_VALUE))
+                .accept(MediaTypes.HAL_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.nombreProducto").value("Arroz"));
@@ -85,7 +82,6 @@ class InventarioControllerTest {
     }
 
     @Test
-    @WithMockUser
     void obtenerPorId_shouldReturn404_whenNotFound() throws Exception {
         // Given
         when(inventarioService.obtenerPorId(99L))
@@ -93,14 +89,13 @@ class InventarioControllerTest {
 
         // When / Then
         mockMvc.perform(get("/inventario/99")
-                        .accept(MediaTypes.HAL_JSON_VALUE))
+                .accept(MediaTypes.HAL_JSON_VALUE))
                 .andExpect(status().isNotFound());
 
         verify(inventarioService).obtenerPorId(99L);
     }
 
     @Test
-    @WithMockUser
     void crear_shouldReturn201() throws Exception {
         // Given
         InventarioRequest request = buildRequest();
@@ -109,8 +104,8 @@ class InventarioControllerTest {
 
         // When / Then
         mockMvc.perform(post("/inventario")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.nombreProducto").value("Arroz"));
@@ -119,7 +114,6 @@ class InventarioControllerTest {
     }
 
     @Test
-    @WithMockUser
     void actualizar_shouldReturn200() throws Exception {
         // Given
         InventarioRequest request = buildRequest();
@@ -128,8 +122,8 @@ class InventarioControllerTest {
 
         // When / Then
         mockMvc.perform(put("/inventario/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1));
 
@@ -137,7 +131,6 @@ class InventarioControllerTest {
     }
 
     @Test
-    @WithMockUser
     void eliminar_shouldReturn204() throws Exception {
         // Given
         doNothing().when(inventarioService).eliminar(1L);
@@ -150,7 +143,6 @@ class InventarioControllerTest {
     }
 
     @Test
-    @WithMockUser
     void obtenerStockBajo_shouldReturn200WithList() throws Exception {
         // Given
         InventarioResponse response = buildResponse();
@@ -161,7 +153,7 @@ class InventarioControllerTest {
 
         // When / Then
         mockMvc.perform(get("/inventario/stock/bajo")
-                        .accept(MediaTypes.HAL_JSON_VALUE))
+                .accept(MediaTypes.HAL_JSON_VALUE))
                 .andExpect(status().isOk());
 
         verify(inventarioService).obtenerStockBajo();
