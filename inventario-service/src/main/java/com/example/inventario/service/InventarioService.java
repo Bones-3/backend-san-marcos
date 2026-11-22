@@ -10,9 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.inventario.dto.InventarioRequest;
 import com.example.inventario.dto.InventarioResponse;
 import com.example.inventario.exception.NotFoundException;
+import com.example.inventario.exception.ConflictException;
 import com.example.inventario.mapper.InventarioMapper;
 import com.example.inventario.model.Inventario;
 import com.example.inventario.repository.InventarioRepository;
+import com.example.inventario.repository.ProductoRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,10 +26,18 @@ public class InventarioService {
 
     private final InventarioRepository inventarioRepository;
     private final InventarioMapper inventarioMapper;
+    private final ProductoRepository productoRepository;
 
     @Transactional
     public InventarioResponse crearInventario(InventarioRequest request) {
         log.info("Iniciando creación de inventario para producto: {}", request.getProductoId());
+
+        if (productoRepository.existsById(request.getProductoId())) {
+            throw new ConflictException("Use la API de productos para crear inventario del catálogo");
+        }
+        if (inventarioRepository.findByProductoId(request.getProductoId()).isPresent()) {
+            throw new ConflictException("El producto ya tiene inventario");
+        }
 
         Inventario inventario = inventarioMapper.toEntity(request);
 
@@ -77,6 +87,13 @@ public class InventarioService {
                 return new NotFoundException("Inventario no encontrado con id: " + id);
             });
 
+        if (productoRepository.existsById(inventario.getProductoId())) {
+            throw new ConflictException("Use la API de productos o ajustes de stock para este inventario");
+        }
+        if (productoRepository.existsById(request.getProductoId())) {
+            throw new ConflictException("No se puede vincular inventario legado a un producto del catálogo");
+        }
+
         inventario.setProductoId(request.getProductoId());
         inventario.setNombreProducto(request.getNombreProducto());
         inventario.setStockActual(request.getStockActual());
@@ -95,6 +112,11 @@ public class InventarioService {
         if (!inventarioRepository.existsById(id)) {
             log.error("Error al eliminar: Inventario con ID {} no existe", id);
             throw new NotFoundException("Inventario no encontrado con id: " + id);
+        }
+        Inventario inventario = inventarioRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException("Inventario no encontrado con id: " + id));
+        if (productoRepository.existsById(inventario.getProductoId())) {
+            throw new ConflictException("No se puede eliminar el inventario de un producto del catálogo");
         }
         inventarioRepository.deleteById(id);
         log.info("Inventario eliminado con id: {}", id);

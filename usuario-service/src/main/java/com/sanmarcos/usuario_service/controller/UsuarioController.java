@@ -8,7 +8,6 @@ import com.sanmarcos.usuario_service.dto.UsuarioRequest;
 import com.sanmarcos.usuario_service.dto.UsuarioResponse;
 import com.sanmarcos.usuario_service.service.UsuarioService;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,6 +24,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -82,6 +82,11 @@ public class UsuarioController {
                 linkTo(methodOn(UsuarioController.class).getAllUsuario()).withSelfRel()));
     }
 
+    @GetMapping("/count")
+    public CountResponse contarUsuarios() {
+        return new CountResponse(usuarioService.countUsuarios());
+    }
+
     @Operation(summary = "Obtener usuario por id")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Usuario encontrado",
@@ -104,7 +109,7 @@ public class UsuarioController {
             content = @Content(schema = @Schema(implementation = UsuarioResponse.class)))
     })
     @PostMapping()
-    public ResponseEntity<UsuarioResponse> createUsuario(@Valid @RequestBody UsuarioRequest usuarioRequest) {
+    public ResponseEntity<UsuarioResponse> createUsuario(@RequestBody UsuarioRequest usuarioRequest) {
         log.info("Petición HTTP POST recibida en /usuario/usuarios - Datos recibidos para correo: {}", usuarioRequest.getCorreoUsuario());
 
         UsuarioResponse creado = usuarioService.createUsuario(usuarioRequest);
@@ -120,7 +125,7 @@ public class UsuarioController {
         @ApiResponse(responseCode = "404", description = "Usuario no encontrado", content = @Content)
     })
     @PutMapping("/{id}")
-    public ResponseEntity<UsuarioResponse> updateUsuario(@PathVariable Long id, @Valid @RequestBody UsuarioRequest usuarioRequest) {
+    public ResponseEntity<UsuarioResponse> updateUsuario(@PathVariable Long id, @RequestBody UsuarioRequest usuarioRequest) {
         log.info("Petición HTTP PUT recibida en /usuario/usuarios/{} - Actualizando datos", id);
 
         UsuarioResponse actualizado = usuarioService.updateUsuario(id, usuarioRequest);
@@ -143,5 +148,13 @@ public class UsuarioController {
         log.info("Usuario con ID {} eliminado. Retornando status 24 (No Content)", id);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{id}/estado")
+    public ResponseEntity<UsuarioResponse> cambiarEstado(@PathVariable Long id, @RequestBody EstadoUsuarioRequest request) {
+        return ResponseEntity.ok(usuarioService.cambiarEstado(id, request.estadoUsuario()));
+    }
+
+    public record EstadoUsuarioRequest(boolean estadoUsuario) {}
+    public record CountResponse(long cantidad) {}
 
 }

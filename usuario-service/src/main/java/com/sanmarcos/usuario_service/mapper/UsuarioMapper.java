@@ -17,6 +17,14 @@ public class UsuarioMapper {
         usuario.setApellidos(request.getApellidos());
         usuario.setTelefonoUsuario(request.getTelefonoUsuario());
         usuario.setEstadoUsuario(true);
+        usuario.setRun(request.getRun());
+        usuario.setFechaNacimiento(request.getFechaNacimiento());
+        if (request.getTipoUsuario() != null) {
+            usuario.setTipoUsuario(request.getTipoUsuario());
+        }
+        usuario.setRegion(request.getRegion());
+        usuario.setComuna(request.getComuna());
+        usuario.setDireccion(request.getDireccion());
 
         return usuario;   
     }
@@ -25,10 +33,22 @@ public class UsuarioMapper {
         return UsuarioResponse.builder()
                 .id(usuario.getId())
                 .correoUsuario(usuario.getCorreoUsuario())
+                .correo(usuario.getCorreoUsuario())
                 .nombre(usuario.getNombres())
                 .apellido(usuario.getApellidos())
+                .apellidos(usuario.getApellidos())
                 .telefonoUsuario(usuario.getTelefonoUsuario())
-                .estadoUsuario(usuario.getEstadoUsuario())
+                .estadoUsuario(Boolean.TRUE.equals(usuario.getEstadoUsuario()))
+                .run(usuario.getRun())
+                .fechaNacimiento(usuario.getFechaNacimiento())
+                .tipoUsuario(usuario.getTipoUsuario() == null ? null : switch (usuario.getTipoUsuario()) {
+                    case ADMIN -> "Administrador";
+                    case VENDEDOR -> "Vendedor";
+                    case CLIENTE -> "Cliente";
+                })
+                .region(usuario.getRegion())
+                .comuna(usuario.getComuna())
+                .direccion(usuario.getDireccion())
                 .build();
     }
 }

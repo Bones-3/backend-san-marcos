@@ -21,6 +21,7 @@ import com.example.inventario.exception.NotFoundException;
 import com.example.inventario.mapper.InventarioMapper;
 import com.example.inventario.model.Inventario;
 import com.example.inventario.repository.InventarioRepository;
+import com.example.inventario.repository.ProductoRepository;
 
 @ExtendWith(MockitoExtension.class)
 class InventarioServiceTest {
@@ -30,6 +31,9 @@ class InventarioServiceTest {
 
     @Mock
     private InventarioMapper inventarioMapper;
+
+    @Mock
+    private ProductoRepository productoRepository;
 
     @InjectMocks
     private InventarioService inventarioService;
@@ -142,12 +146,14 @@ class InventarioServiceTest {
     void eliminar_shouldDeleteById() {
         // Given
         when(inventarioRepository.existsById(1L)).thenReturn(true);
+        when(inventarioRepository.findById(1L)).thenReturn(Optional.of(buildInventario()));
 
         // When
         inventarioService.eliminar(1L);
 
         // Then
         verify(inventarioRepository).existsById(1L);
+        verify(productoRepository).existsById(10L);
         verify(inventarioRepository).deleteById(1L);
     }
 

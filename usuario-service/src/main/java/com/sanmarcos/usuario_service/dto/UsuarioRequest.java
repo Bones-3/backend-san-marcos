@@ -1,21 +1,27 @@
 package com.sanmarcos.usuario_service.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import java.time.LocalDate;
+
+import com.sanmarcos.usuario_service.model.TipoUsuario;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class UsuarioRequest {
-    @NotBlank(message = "El correo es obligatorio")
     private String correoUsuario;
 
-    @NotBlank(message = "El nombre es obligatorio")
     private String nombres;
     
-    @NotBlank(message = "El apellido es obligatorio")
     private String apellidos;
 
-    @NotBlank(message = "El telefono es obligatorio")
     private String telefonoUsuario;
+    private String clave;
+
+    private String run;
+    private LocalDate fechaNacimiento;
+    private TipoUsuario tipoUsuario;
+    private String region;
+    private String comuna;
+    private String direccion;
 }

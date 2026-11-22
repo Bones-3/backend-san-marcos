@@ -1,0 +1,9 @@
+.git
+.vscode
+**/target
+**/.mvn/wrapper/maven-wrapper.jar
+.env
+*.zip
+mysql-data
+mysql_data
+db-data

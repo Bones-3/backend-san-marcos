@@ -2,9 +2,9 @@ spring:
   application:
     name: usuario-service
   datasource:
-    url: jdbc:mysql://localhost:3306/db_usuario_service
-    username: root
-    password: 
+    url: ${USUARIO_DB_URL:jdbc:mysql://localhost:3306/db_usuario_service?createDatabaseIfNotExist=true}
+    username: ${USUARIO_DB_USER:root}
+    password: ${USUARIO_DB_PASSWORD:}
     hikari:
       connection-timeout: 30000
       maximum-pool-size: 10
@@ -12,16 +12,27 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
+  flyway:
+    baseline-on-migrate: true
+    baseline-version: 1
+    locations: classpath:db/migration
+
+app:
+  auth:
+    jwt-secret: ${AUTH_JWT_SECRET:}
+    token-seconds: 3600
+    admin-email: ${ADMIN_EMAIL:}
+    admin-password: ${ADMIN_PASSWORD:}
 
 server:
-  port: 8083
+  port: ${USUARIO_PORT:8083}
 
 eureka:
   client:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
 
 springdoc:
   api-docs:

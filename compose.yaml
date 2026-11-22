@@ -1,0 +1,86 @@
+services:
+  mysql:
+    image: mysql:8.4.13
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Copia .env.example a .env}
+      MYSQL_DATABASE: db_usuario_service
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  eureka:
+    build:
+      context: .
+      args:
+        SERVICE: eureka
+    environment:
+      EUREKA_HOST: eureka
+    ports:
+      - "8761:8761"
+
+  usuario-service:
+    build:
+      context: .
+      args:
+        SERVICE: usuario-service
+    environment:
+      USUARIO_DB_URL: jdbc:mysql://mysql:3306/db_usuario_service?createDatabaseIfNotExist=true
+      USUARIO_DB_USER: root
+      USUARIO_DB_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Copia .env.example a .env}
+      EUREKA_URL: http://eureka:8761/eureka/
+      AUTH_JWT_SECRET: ${AUTH_JWT_SECRET:?Define AUTH_JWT_SECRET en .env}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:?Define ADMIN_EMAIL en .env}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Define ADMIN_PASSWORD en .env}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka:
+        condition: service_started
+    ports:
+      - "8083:8083"
+
+  inventario-service:
+    build:
+      context: .
+      args:
+        SERVICE: inventario-service
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/ms_inventario?createDatabaseIfNotExist=true
+      DB_USER: root
+      DB_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Copia .env.example a .env}
+      EUREKA_URL: http://eureka:8761/eureka/
+      AUTH_JWT_SECRET: ${AUTH_JWT_SECRET:?Define AUTH_JWT_SECRET en .env}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka:
+        condition: service_started
+    ports:
+      - "8091:8091"
+
+  api-gateway:
+    build:
+      context: .
+      args:
+        SERVICE: api-gateway
+    environment:
+      EUREKA_URL: http://eureka:8761/eureka/
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173}
+    depends_on:
+      eureka:
+        condition: service_started
+      usuario-service:
+        condition: service_started
+      inventario-service:
+        condition: service_started
+    ports:
+      - "8080:8080"
+
+volumes:
+  mysql-data:

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.sanmarcos.usuario_service.dto.UsuarioRequest;
 import com.sanmarcos.usuario_service.dto.UsuarioResponse;
@@ -21,6 +22,7 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final UsuarioMapper usuarioMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
     public List<UsuarioResponse> getUsuariosActivo() {
@@ -41,6 +43,11 @@ public class UsuarioService {
     }
 
     @Transactional(readOnly = true)
+    public long countUsuarios() {
+        return usuarioRepository.count();
+    }
+
+    @Transactional(readOnly = true)
     public UsuarioResponse getUsuarioById(Long id) {
         log.info("Buscando usuario con ID: {}", id);
         return usuarioRepository.findById(id)
@@ -55,6 +62,9 @@ public class UsuarioService {
     public UsuarioResponse createUsuario(UsuarioRequest request) {
         log.info("Iniciando la creación de un nuevo usuario con correo: {}", request.getCorreoUsuario());
         var usuario = usuarioMapper.toEntity(request);
+        if (request.getClave() != null && !request.getClave().isEmpty()) {
+            usuario.setClaveHash(passwordEncoder.encode(request.getClave()));
+        }
         var usuarioGuardado = usuarioRepository.save(usuario);
         log.info("Usuario creado exitosamente con ID: {}", usuarioGuardado.getId());
         return usuarioMapper.toResponse(usuarioGuardado);
@@ -74,6 +84,27 @@ public class UsuarioService {
         usuario.setNombres(request.getNombres());  
         usuario.setApellidos(request.getApellidos());
         usuario.setTelefonoUsuario(request.getTelefonoUsuario());
+        if (request.getRun() != null) {
+            usuario.setRun(request.getRun());
+        }
+        if (request.getFechaNacimiento() != null) {
+            usuario.setFechaNacimiento(request.getFechaNacimiento());
+        }
+        if (request.getTipoUsuario() != null) {
+            usuario.setTipoUsuario(request.getTipoUsuario());
+        }
+        if (request.getRegion() != null) {
+            usuario.setRegion(request.getRegion());
+        }
+        if (request.getComuna() != null) {
+            usuario.setComuna(request.getComuna());
+        }
+        if (request.getDireccion() != null) {
+            usuario.setDireccion(request.getDireccion());
+        }
+        if (request.getClave() != null && !request.getClave().isEmpty()) {
+            usuario.setClaveHash(passwordEncoder.encode(request.getClave()));
+        }
 
         var usuarioActualizado = usuarioRepository.save(usuario);
         log.info("Usuario con ID: {} actualizado correctamente", id);
@@ -93,6 +124,14 @@ public class UsuarioService {
         usuario.setEstadoUsuario(false);
         usuarioRepository.save(usuario);
         log.info("Usuario con ID: {} deshabilitado (Eliminación lógica completada)", id);
+    }
+
+    @Transactional
+    public UsuarioResponse cambiarEstado(Long id, boolean activo) {
+        var usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+        usuario.setEstadoUsuario(activo);
+        return usuarioMapper.toResponse(usuarioRepository.save(usuario));
     }
 
 }

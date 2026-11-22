@@ -10,8 +10,13 @@ spring:
     hibernate:
       ddl-auto: create-drop
     database-platform: org.hibernate.dialect.H2Dialect
-  liquibase:
+  flyway:
     enabled: false
+
+app:
+  auth:
+    jwt-secret: test-secret-for-san-marcos-unit-tests-32-bytes
+    token-seconds: 3600
 
 eureka:
   client:

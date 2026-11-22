@@ -1,23 +1,13 @@
---liquibase formatted sql
-
---changeset fabian:1
 CREATE TABLE usuario (
     id_usuario BIGINT AUTO_INCREMENT PRIMARY KEY,
-    correo_usuario VARCHAR(90) UNIQUE,
+    correo_usuario VARCHAR(100) UNIQUE,
     nombres VARCHAR(90),
-    apellidos VARCHAR(90),
+    apellidos VARCHAR(100),
     telefono_usuario VARCHAR(30),
     estado_usuario BOOLEAN DEFAULT TRUE
 );
 
---changeset fabian:2
-INSERT INTO usuario (
-    correo_usuario,
-    nombres,
-    apellidos,
-    telefono_usuario,
-    estado_usuario
-) VALUES
+INSERT INTO usuario (correo_usuario, nombres, apellidos, telefono_usuario, estado_usuario) VALUES
 ('juan.perez@gmail.com', 'Juan', 'Pérez', '+56911111111', TRUE),
 ('maria.gonzalez@gmail.com', 'María', 'González', '+56922222222', TRUE),
 ('carlos.rojas@gmail.com', 'Carlos', 'Rojas', '+56933333333', TRUE),
